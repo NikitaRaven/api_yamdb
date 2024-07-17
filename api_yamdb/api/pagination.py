@@ -1,9 +1,8 @@
+from django.conf import settings
 from rest_framework.pagination import LimitOffsetPagination
-
-from .constants import DEFAULT_PAGE_SIZE
 
 
 class UserPaginatior(LimitOffsetPagination):
     """Individual paginator for CustomUser model."""
 
-    default_limit = DEFAULT_PAGE_SIZE
+    default_limit = settings.REST_FRAMEWORK.get('PAGE_SIZE')

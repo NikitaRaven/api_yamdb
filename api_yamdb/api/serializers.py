@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
 from users.models import CustomUser
+from reviews.models import Title, Category, Genre
 from users.constants import NAME_LENGTH
 from .error_constants import INVALID_USERNAME, ME_NOT_ALLOWED
 
@@ -39,3 +42,38 @@ class AuthUserSerializer(BaseUserSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'confirmation_code')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        exclude = ('id', )
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        exclude = ('id', )
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+    genre = serializers.SlugRelatedField(
+        many=True,
+        slug_field='slug',
+        queryset=Genre.objects.all()
+    )
+
+    def validate_year(self, value):
+        if value > datetime.now().year:
+            raise serializers.ValidationError(
+                "You can't add works that haven't been released yet"
+            )
+        return value
+
+    class Meta:
+        model = Title
+        fields = '__all__'
