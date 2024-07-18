@@ -47,9 +47,7 @@ class SignUpView(generics.CreateAPIView):
 
         serializer = self.get_serializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
 
         confirmation_code = get_random_string(length=CODE_LENGTH)
         serializer.save(confirmation_code=confirmation_code)
@@ -77,8 +75,7 @@ class TokenObtainView(generics.CreateAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
 
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')

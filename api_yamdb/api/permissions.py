@@ -10,47 +10,48 @@ class AdminOrSuperOrSelf(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.role == ADMIN or request.user.is_staff:
-            return True
-
-        if view.kwargs.get('username') == 'me':
+        if (request.user.role == ADMIN
+            or request.user.is_staff
+                or view.kwargs.get('username') == 'me'):
             return True
 
         return False
 
 
-class CategoryGenrePermission(permissions.BasePermission):
+class AdminOrSuperAlteration(permissions.BasePermission):
+    """
+    Only Admin and superuser have 'allowed_methods' permissions.
+    """
+
+    def __init__(self, allowed_methods):
+        self.allowed_methods = allowed_methods
+
+    def has_permission(self, request, view):
+        if request.method in self.allowed_methods:
+            user = request.user
+            return user.role == ADMIN or user.is_staff
+
+        return True
+
+
+class CategoryGenrePermission(AdminOrSuperAlteration):
     """
     Admin and superuser have POST and DELETE permissions.
     Users have read only access.
     """
 
-    def has_permission(self, request, view):
-        if request.method == 'GET':
-            return True
-
-        if request.method in ('POST', 'DELETE'):
-            user = request.user
-            return user.role == ADMIN or user.is_staff
-
-        return False
+    def __init__(self):
+        super().__init__(allowed_methods=('POST', 'DELETE'))
 
 
-class TitlePermission(permissions.BasePermission):
+class TitlePermission(AdminOrSuperAlteration):
     """
     Admin and superuser have 'POST', 'DELETE' and 'PATCH' permissions.
     Users have read only access.
     """
 
-    def has_permission(self, request, view):
-        if request.method == 'GET':
-            return True
-
-        if request.method in ('POST', 'DELETE', 'PATCH'):
-            user = request.user
-            return user.role == ADMIN or user.is_staff
-
-        return False
+    def __init__(self):
+        super().__init__(allowed_methods=('POST', 'DELETE', 'PATCH'))
 
 
 class ReviewCommentsPermission(permissions.BasePermission):
@@ -60,9 +61,6 @@ class ReviewCommentsPermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        if request.method == 'GET':
-            return True
-
         if request.method == 'POST':
             return request.user.is_authenticated
 
@@ -72,4 +70,4 @@ class ReviewCommentsPermission(permissions.BasePermission):
                     or user.role in (ADMIN, MODERATOR)
                     or user.is_staff)
 
-        return False
+        return True
