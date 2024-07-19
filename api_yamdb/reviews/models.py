@@ -42,7 +42,7 @@ class Title(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['id', 'name']
+        ordering = ('id', 'name')
 
 class GenreTitle(models.Model):
     genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)

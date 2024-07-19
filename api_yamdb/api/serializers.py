@@ -62,8 +62,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        exclude = ('id',)
-        ordering = ['slug']
+        exclude = ('id', )
+        ordering = ('slug', )
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -76,7 +76,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         exclude = ('id', )
-        ordering = ['slug']
+        ordering = ('slug', )
 
 
 class TitleSerializer(serializers.ModelSerializer):
