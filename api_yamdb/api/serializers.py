@@ -17,7 +17,6 @@ class CategoryGenreSlugRelatedField(serializers.SlugRelatedField):
                 'slug': obj.slug}
 
 
-
 class BaseUserSerializer(serializers.ModelSerializer):
 
     username = serializers.RegexField(
@@ -98,12 +97,11 @@ class TitleSerializer(serializers.ModelSerializer):
         return value
 
     def get_rating(self, obj):
-
          reviews = Review.objects.filter(title=obj)
          if bool(reviews):
-            return sum(review.score for review in reviews)
+            return round(sum(review.score for review in reviews)
+                         / len(reviews), 1)
          return None
-
 
     class Meta:
         model = Title

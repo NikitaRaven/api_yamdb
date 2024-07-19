@@ -25,6 +25,7 @@ class Command(BaseCommand):
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
                     Genre.objects.create(
+                        pk=row['id'],
                         name=row['name'],
                         slug=row['slug'],
                     )
@@ -36,6 +37,7 @@ class Command(BaseCommand):
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
                     Category.objects.create(
+                        pk=row['id'],
                         name=row['name'],
                         slug=row['slug'],
                     )
@@ -48,6 +50,7 @@ class Command(BaseCommand):
                 for row in csv_reader:
                     cur_category = Category.objects.get(pk=row['category'])
                     Title.objects.create(
+                        pk=row['id'],
                         name=row['name'],
                         year=row['year'],
                         category=cur_category,
@@ -62,6 +65,7 @@ class Command(BaseCommand):
                     cur_title = Title.objects.get(pk=row['title_id'])
                     cur_genre = Genre.objects.get(pk=row['genre_id'])
                     GenreTitle.objects.create(
+                        pk=row['id'],
                         title_id=cur_title,
                         genre_id=cur_genre,
                     )
@@ -73,6 +77,7 @@ class Command(BaseCommand):
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
                     User.objects.create(
+                        pk=row['id'],
                         username=row['username'],
                         email=row['email'],
                         bio=row['bio'],
@@ -89,7 +94,8 @@ class Command(BaseCommand):
                     cur_title = Title.objects.get(pk=row['title_id'])
                     cur_user = User.objects.get(pk=row['author'])
                     Review.objects.create(
-                        title_id=cur_title,
+                        pk=row['id'],
+                        title=cur_title,
                         text=row['text'],
                         author=cur_user,
                         score=row['score'],
@@ -105,7 +111,8 @@ class Command(BaseCommand):
                     cur_review = Review.objects.get(pk=row['review_id'])
                     cur_user = User.objects.get(pk=row['author'])
                     Comment.objects.create(
-                        review_id=cur_review,
+                        pk=row['id'],
+                        review=cur_review,
                         text=row['text'],
                         author=cur_user,
                         pub_date=row['pub_date'],
