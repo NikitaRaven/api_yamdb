@@ -9,6 +9,9 @@ from .serializers import (
     CommentSerializer, ReviewSerializer
 )
 from .filters import TitleFilter
+from .permissions import (
+    CategoryGenrePermission, TitlePermission, ReviewCommentsPermission
+)
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -20,6 +23,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    permission_classes = (CategoryGenrePermission, )
 
 
 class GenreViewSet(mixins.CreateModelMixin,
@@ -31,6 +35,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    permission_classes = (CategoryGenrePermission, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -38,11 +43,14 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
+    permission_classes = (TitlePermission,)
+    http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
+    permission_classes = (ReviewCommentsPermission,)
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get("title_id"))
@@ -58,6 +66,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
+    permission_classes = (ReviewCommentsPermission,)
 
     def get_review(self):
         return get_object_or_404(Review, id=self.kwargs.get("review_id"))

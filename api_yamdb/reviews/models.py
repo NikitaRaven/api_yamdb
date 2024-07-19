@@ -31,10 +31,7 @@ class Title(models.Model):
         MinValueValidator(reviews.constants.YEAR_MIN)
     ])
     description = models.TextField(blank=True, null=True)
-    genre = models.ManyToManyField(
-        Genre,
-        related_name='title',
-    )
+    genre = models.ManyToManyField(Genre, through='GenreTitle')
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
         related_name='title',
@@ -43,6 +40,16 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ('id', 'name')
+
+class GenreTitle(models.Model):
+    genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.title_id} {self.genre_id}'
 
 
 class Review(models.Model):
