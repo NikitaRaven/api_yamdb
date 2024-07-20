@@ -75,8 +75,12 @@ git clone https://github.com/Oleg-Pikalov/api_yamdb.git
 
 4) Установить и активировать виртуальное окружение:
 ```
-python -m venv venv
-sourse venv/Scripts/activate
+python3 -m venv venv            (для Linux и macOS)
+source venv/bin/activate        (для Linux и macOS)
+
+python -m venv venv             (для Windows)
+sourse venv/Scripts/activate    (для Windows)
+
 ```
 5) Установить необходимые зависимости:
 ```
@@ -84,16 +88,25 @@ pip install -r requirements.txt
 ```
 6) Выполните миграции(нужно перейти в директорию, где лежит файл manage.py, например -`/c/Dev/api_yamdb/api_yamdb`):
 ```
-python manage.py makemigrations
-python manage.py migrate
+python3 manage.py makemigrations  (для Linux и macOS)
+python3 manage.py migrate         (для Linux и macOS)
+
+python manage.py makemigrations   (для Windows)
+python manage.py migrate          (для Windows)
 ```
-7) Создайте суперпользователя:
+7) Выполните импорт данных:
 ```
-python manage.py createsuperuser
+python manage.py import_csv
 ```
-8) Запустите сервер:
+8) Создайте суперпользователя:
 ```
-python manage.py runserver
+python3 manage.py createsuperuser (для Linux и macOS)
+python manage.py createsuperuser  (для Windows-систем)
+```
+9) Запустите сервер:
+```
+python3 manage.py runserver (для Linux и macOS)
+python manage.py runserver  (для Windows-систем)
 ```
 Ваш проект запустился на `http://127.0.0.1:8000/`
 
@@ -101,7 +114,7 @@ python manage.py runserver
 
 C помощью *flake8* вы можете проверить оформление кода
 
-9) Можно создать пользователя после запуска проекта:
+10) Можно создать пользователя после запуска проекта:
 ```
 http://127.0.0.1:8000/v1/auth/signup/
 ```
