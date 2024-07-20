@@ -10,32 +10,33 @@ from .serializers import (
 )
 from .filters import TitleFilter
 from .permissions import (
-    CategoryGenrePermission, TitlePermission, ReviewCommentsPermission
+    CategoryGenreTitlePermission, ReviewCommentsPermission
 )
+from .constants import HTTP_METHODS_ALLOWED, ORDER_BY_SLUG, ORDER_BY_PUB_DATE
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = CategorySerializer
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    permission_classes = (CategoryGenrePermission, )
+    permission_classes = (CategoryGenreTitlePermission, )
 
 
 class GenreViewSet(mixins.CreateModelMixin,
                    mixins.ListModelMixin,
                    mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = GenreSerializer
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    permission_classes = (CategoryGenrePermission, )
+    permission_classes = (CategoryGenreTitlePermission, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -43,20 +44,20 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    permission_classes = (TitlePermission,)
-    http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
+    permission_classes = (CategoryGenreTitlePermission,)
+    http_method_names = HTTP_METHODS_ALLOWED
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
+    http_method_names = HTTP_METHODS_ALLOWED
     permission_classes = (ReviewCommentsPermission,)
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get("title_id"))
 
     def get_queryset(self):
-        return self.get_title().reviews.all()
+        return self.get_title().reviews.all().order_by(ORDER_BY_PUB_DATE)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
@@ -65,14 +66,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    http_method_names = ['get', 'post', 'delete', 'head', 'options', 'patch']
+    http_method_names = HTTP_METHODS_ALLOWED
     permission_classes = (ReviewCommentsPermission,)
 
     def get_review(self):
         return get_object_or_404(Review, id=self.kwargs.get("review_id"))
 
     def get_queryset(self):
-        return self.get_review().comments.all()
+        return self.get_review().comments.all().order_by(ORDER_BY_PUB_DATE)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,

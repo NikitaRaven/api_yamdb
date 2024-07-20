@@ -44,6 +44,7 @@ class Title(models.Model):
     class Meta:
         ordering = ('id', 'name')
 
+
 class GenreTitle(models.Model):
     genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
