@@ -8,6 +8,7 @@ from users.constants import NAME_LENGTH
 from .error_constants import (
     INVALID_USERNAME, ME_NOT_ALLOWED, INVALID_SLUG_MAX_LEN, INVALID_YEAR
 )
+from .constants import ORDER_BY_SLUG
 
 
 class CategoryGenreSlugRelatedField(serializers.SlugRelatedField):
@@ -63,7 +64,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         exclude = ('id', )
-        ordering = ('slug', )
+        ordering = (ORDER_BY_SLUG, )
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -76,7 +77,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         exclude = ('id', )
-        ordering = ('slug', )
+        ordering = (ORDER_BY_SLUG, )
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -97,11 +98,11 @@ class TitleSerializer(serializers.ModelSerializer):
         return value
 
     def get_rating(self, obj):
-         reviews = Review.objects.filter(title=obj)
-         if bool(reviews):
+        reviews = Review.objects.filter(title=obj)
+        if bool(reviews):
             return round(sum(review.score for review in reviews)
                          / len(reviews), 1)
-         return None
+        return None
 
     class Meta:
         model = Title

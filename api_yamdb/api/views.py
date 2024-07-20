@@ -12,14 +12,14 @@ from .filters import TitleFilter
 from .permissions import (
     CategoryGenreTitlePermission, ReviewCommentsPermission
 )
-from .constants import HTTP_METHODS_ALLOWED
+from .constants import HTTP_METHODS_ALLOWED, ORDER_BY_SLUG, ORDER_BY_PUB_DATE
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
-    queryset = Category.objects.all().order_by('name')
+    queryset = Category.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = CategorySerializer
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
@@ -31,7 +31,7 @@ class GenreViewSet(mixins.CreateModelMixin,
                    mixins.ListModelMixin,
                    mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
-    queryset = Genre.objects.all().order_by('name')
+    queryset = Genre.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = GenreSerializer
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
@@ -57,7 +57,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Title, id=self.kwargs.get("title_id"))
 
     def get_queryset(self):
-        return self.get_title().reviews.all().order_by('-pub_date')
+        return self.get_title().reviews.all().order_by(ORDER_BY_PUB_DATE)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
@@ -73,7 +73,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Review, id=self.kwargs.get("review_id"))
 
     def get_queryset(self):
-        return self.get_review().comments.all().order_by('-pub_date')
+        return self.get_review().comments.all().order_by(ORDER_BY_PUB_DATE)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
