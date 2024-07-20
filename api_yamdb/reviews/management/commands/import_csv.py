@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 'first_name',
                 'last_name'
             )),
-            ('review.csv',Review,
+            ('review.csv', Review,
              ('id', 'title', 'text', 'author', 'score', 'pub_date')),
             ('comments.csv', Comment,
              ('id', 'review', 'text', 'author', 'pub_date')),
