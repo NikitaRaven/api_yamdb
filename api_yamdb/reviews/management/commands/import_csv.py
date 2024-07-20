@@ -10,6 +10,7 @@ User = get_user_model()
 
 class Command(BaseCommand):
     help = 'Import data from a CSV file'
+
     def handle(self, *args, **kwargs):
         base_path = 'static/data/'
         category_csv = base_path + 'category.csv'
@@ -119,6 +120,3 @@ class Command(BaseCommand):
                     )
         except Exception:
             pass
-
-
-
