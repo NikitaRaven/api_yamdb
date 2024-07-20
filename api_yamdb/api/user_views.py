@@ -4,15 +4,16 @@ from rest_framework.response import Response
 
 from users.models import CustomUser
 from .serializers import CustomUserSerializer
-from .pagination import UserPaginatior
 from .permissions import AdminOrSuperOrSelf
+from .error_constants import (
+    USER_EXISTS, USER_NO_PUT, NO_ROLE_CHANGE, ONLY_STAFF_DELETE
+)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().order_by('username')
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthenticated, AdminOrSuperOrSelf)
-    pagination_class = UserPaginatior
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
@@ -31,7 +32,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         ).first()
 
         if existing_user:
-            return Response({'error': f'{username} already exist'},
+            return Response({'error': USER_EXISTS},
                             status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)
@@ -39,20 +40,20 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.get('partial', False)
         if not partial:
-            return Response({'error': 'put is not allowed'},
+            return Response({'error': USER_NO_PUT},
                             status.HTTP_405_METHOD_NOT_ALLOWED)
 
         elif kwargs.get('username') == 'me':
             kwargs['username'] = self.request.user.username
             if request.data.get('role'):
-                return Response({'error': 'No role change at this endpoint'},
+                return Response({'error': NO_ROLE_CHANGE},
                                 status.HTTP_400_BAD_REQUEST)
 
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         if self.kwargs.get('username') == 'me':
-            return Response({'error': 'only stuff can delete'},
+            return Response({'error': ONLY_STAFF_DELETE},
                             status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
