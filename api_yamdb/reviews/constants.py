@@ -1,0 +1,5 @@
+CHAR_MAX_LEN: int = 256
+SLUG_MAX_LEN: int = 256
+YEAR_MIN: int = 1000
+RATING_MIN: int = 0
+RATING_MAX: int = 10
