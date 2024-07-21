@@ -5,9 +5,7 @@ from rest_framework.response import Response
 from users.models import CustomUser
 from .serializers import CustomUserSerializer
 from .permissions import AdminOrSuperOrSelf
-from .error_constants import (
-    USER_EXISTS, USER_NO_PUT, NO_ROLE_CHANGE, ONLY_STAFF_DELETE
-)
+from .error_constants import USER_NO_PUT, NO_ROLE_CHANGE, ONLY_STAFF_DELETE
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -25,25 +23,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             ).first()
         return super().get_object()
 
-    def create(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        existing_user = self.get_queryset().filter(
-            username=username
-        ).first()
-
-        if existing_user:
-            return Response({'error': USER_EXISTS},
-                            status.HTTP_400_BAD_REQUEST)
-
-        return super().create(request, *args, **kwargs)
-
     def update(self, request, *args, **kwargs):
         partial = kwargs.get('partial', False)
         if not partial:
             return Response({'error': USER_NO_PUT},
                             status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        elif kwargs.get('username') == 'me':
+        if kwargs.get('username') == 'me':
             kwargs['username'] = self.request.user.username
             if request.data.get('role'):
                 return Response({'error': NO_ROLE_CHANGE},
