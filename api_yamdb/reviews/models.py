@@ -42,6 +42,8 @@ class Title(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
         ordering = ('id', 'name')
 
 
@@ -56,8 +58,10 @@ class GenreTitle(models.Model):
 class Review(models.Model):
     text = models.TextField()
     score = models.SmallIntegerField(validators=[
-        MinValueValidator(reviews.constants.RATING_MIN),
-        MaxValueValidator(reviews.constants.RATING_MAX)
+        MinValueValidator(reviews.constants.RATING_MIN,
+                          "Оценка не ожет быть меньше 0"),
+        MaxValueValidator(reviews.constants.RATING_MAX,
+                          "Оценка не ожет быть больше 10")
     ])
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     author = models.ForeignKey(
@@ -68,6 +72,8 @@ class Review(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -87,3 +93,7 @@ class Comment(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
+    
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
