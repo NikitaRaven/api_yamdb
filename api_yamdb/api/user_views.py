@@ -24,16 +24,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         return super().get_object()
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.get('partial', False)
-        if not partial:
+        if not kwargs.get('partial'):
             return Response({'error': USER_NO_PUT},
                             status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        if kwargs.get('username') == 'me':
-            kwargs['username'] = self.request.user.username
-            if request.data.get('role'):
-                return Response({'error': NO_ROLE_CHANGE},
-                                status.HTTP_400_BAD_REQUEST)
+        if kwargs.get('username') == 'me' and request.data.get('role'):
+            return Response({'error': NO_ROLE_CHANGE},
+                            status.HTTP_400_BAD_REQUEST)
 
         return super().update(request, *args, **kwargs)
 

@@ -10,3 +10,13 @@ ROLE_CHOICES: tuple = (
     (MODERATOR, 'Moderator'),
     (ADMIN, 'admin'),
 )
+
+USERNAME: str = 'Имя пользователя'
+EMAIL: str = 'Адрес почты'
+FIRST_NAME: str = 'Имя'
+LAST_NAME: str = 'Фамилия'
+BIO: str = 'О себе'
+ROLE: str = 'Группа'
+CONFIRMATION_CODE: str = 'Код подтверждения'
+USER_VERBOSE: str = 'Пользователь'
+USER_VERBOSE_PLURAL: str = 'Пользователи'
