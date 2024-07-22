@@ -1,7 +1,7 @@
-from rest_framework import mixins, viewsets
-from rest_framework import filters
+from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
 
 from reviews.models import Category, Genre, Title, Review
 from .serializers import (
@@ -13,30 +13,17 @@ from .permissions import (
     CategoryGenreTitlePermission, ReviewCommentsPermission
 )
 from .constants import HTTP_METHODS_ALLOWED, ORDER_BY_SLUG, ORDER_BY_PUB_DATE
+from .mixins import CreateListDestroySearchSlugMixin
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(CreateListDestroySearchSlugMixin):
     queryset = Category.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = CategorySerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    permission_classes = (CategoryGenreTitlePermission, )
 
 
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(CreateListDestroySearchSlugMixin):
     queryset = Genre.objects.all().order_by(ORDER_BY_SLUG)
     serializer_class = GenreSerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    permission_classes = (CategoryGenreTitlePermission, )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -46,6 +33,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
     permission_classes = (CategoryGenreTitlePermission,)
     http_method_names = HTTP_METHODS_ALLOWED
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(rating=Avg('reviews__score'))
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

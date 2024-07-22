@@ -1,7 +1,5 @@
 from rest_framework import permissions
 
-from users.constants import ADMIN, MODERATOR
-
 
 class AdminOrSuperOrSelf(permissions.BasePermission):
     """
@@ -10,7 +8,7 @@ class AdminOrSuperOrSelf(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (request.user.role == ADMIN
+        return (request.user.is_admin
                 or request.user.is_staff
                 or view.kwargs.get('username') == 'me')
 
@@ -25,7 +23,7 @@ class CategoryGenreTitlePermission(permissions.BasePermission):
         if request.method in ('POST', 'DELETE', 'PATCH'):
             user = request.user
             return (user.is_authenticated
-                    and (user.role == ADMIN or user.is_staff))
+                    and (user.is_admin or user.is_staff))
 
         return True
 
@@ -47,7 +45,7 @@ class ReviewCommentsPermission(permissions.BasePermission):
             user = request.user
             return (user.is_authenticated
                     and (obj.author == user
-                         or user.role in (ADMIN, MODERATOR)
+                         or user.is_admin or user.is_moderator
                          or user.is_staff))
 
         return True
