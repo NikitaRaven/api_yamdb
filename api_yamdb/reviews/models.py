@@ -2,11 +2,27 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.constants import *
+from .constants import *
+from .validators import title_year_validator
 
 User = get_user_model()
 
 
+class NameSlugModel(models.Model):
+    name = models.CharField(max_length=CHAR_MAX_LEN,
+                            verbose_name=NAME_VERBOSE_NAME)
+    slug = models.SlugField(unique=True,
+                            max_length=SLUG_MAX_LEN,
+                            verbose_name=SLUG_VERBOSE_NAME)
+
+    class Meta:
+        abstract = True
+        ordering = ('slug', )
+    
+    def __str__(self):
+        return self.slug
+
+      
 class BaseModel(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
@@ -17,48 +33,57 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+        
+class Genre(NameSlugModel):
 
-class Genre(models.Model):
-    name = models.CharField(max_length=CHAR_MAX_LEN)
-    slug = models.SlugField(unique=True,
-                            max_length=SLUG_MAX_LEN)
-
-    def __str__(self):
-        return self.slug
+    class Meta:
+        verbose_name = GENRE_VERBOSE_NAME
+        verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=CHAR_MAX_LEN)
-    slug = models.SlugField(unique=True,
-                            max_length=SLUG_MAX_LEN)
+class Category(NameSlugModel):
 
-    def __str__(self):
-        return self.slug
+    class Meta:
+        verbose_name = CATEGORY_VERBOSE_NAME
+        verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=CHAR_MAX_LEN)
-    year = models.SmallIntegerField(validators=[
-        MinValueValidator(YEAR_MIN)
-    ])
-    description = models.TextField(blank=True, null=True)
-    genre = models.ManyToManyField(Genre, through='GenreTitle')
+    name = models.CharField(max_length=CHAR_MAX_LEN,
+                            verbose_name=NAME_VERBOSE_NAME)
+    year = models.PositiveSmallIntegerField(
+        validators=[title_year_validator],
+        verbose_name=TITLE_YEAR_VERBOSE_NAME
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=TITLE_DESCRIPTIONS_VERBOSE_NAME
+    )
+    genre = models.ManyToManyField(
+        Genre, through='GenreTitle',
+        verbose_name=GENRE_VERBOSE_NAME_PLURAL
+    )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
         related_name='title',
         null=True,
+        verbose_name=CATEGORY_VERBOSE_NAME
     )
+
+    class Meta:
+        ordering = ('id', 'name')
+        verbose_name = TITLE_VERBOSE_NAME
+        verbose_name_plural = TITLE_VERBOSE_NAME_PLURAL
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = VERBOSE_NAME_TITLE
-        verbose_name_plural = VERBOSE_NAME_TITLE_PLURAL
-        ordering = ('id', 'name')
-
 
 class GenreTitle(models.Model):
+    """ Отдельная модель отношений между Title и Genre.
+    Нужна для ипорта данных из csv"""
+
     genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
 
