@@ -6,7 +6,8 @@ from users.models import CustomUser
 from reviews.models import Title, Category, Genre, Review, Comment
 from users.constants import NAME_LENGTH
 from .error_constants import (
-    INVALID_USERNAME, ME_NOT_ALLOWED, INVALID_SLUG_MAX_LEN, INVALID_YEAR
+    INVALID_USERNAME, ME_NOT_ALLOWED, INVALID_SLUG_MAX_LEN, INVALID_YEAR,
+    INVALID_REVIEW
 )
 from .constants import ORDER_BY_SLUG
 
@@ -121,9 +122,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             author=self.context['request'].user
         )
         if request.method == 'POST' and review.exists():
-            raise serializers.ValidationError(
-                'Ваш отзыв на это произведение уже опубликован'
-            )
+            raise serializers.ValidationError(INVALID_REVIEW)
         return data
 
     class Meta:
