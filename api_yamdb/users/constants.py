@@ -11,12 +11,12 @@ ROLE_CHOICES: tuple = (
     (ADMIN, 'admin'),
 )
 
-USERNAME: str = 'Имя пользователя'
-EMAIL: str = 'Адрес почты'
-FIRST_NAME: str = 'Имя'
-LAST_NAME: str = 'Фамилия'
-BIO: str = 'О себе'
-ROLE: str = 'Группа'
-CONFIRMATION_CODE: str = 'Код подтверждения'
-USER_VERBOSE: str = 'Пользователь'
-USER_VERBOSE_PLURAL: str = 'Пользователи'
+VERBOSE_NAME_USERNAME: str = 'имя пользователя'
+VERBOSE_NAME_EMAIL: str = 'адрес почты'
+VERBOSE_NAME_FIRST_NAME: str = 'имя'
+VERBOSE_NAME_LAST_NAME: str = 'фамилия'
+VERBOSE_NAME_BIO: str = 'о себе'
+VERBOSE_NAME_ROLE: str = 'группа'
+VERBOSE_NAME_CONFIRMATION_CODE: str = 'код подтверждения'
+CUSTOM_USER_VERBOSE: str = 'пользователь'
+CUSTOM_USER_VERBOSE_PLURAL: str = 'пользователи'

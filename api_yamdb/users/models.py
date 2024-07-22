@@ -3,8 +3,10 @@ from django.contrib.auth.models import AbstractUser
 
 from .constants import (
     NAME_LENGTH, MAIL_LENGTH, CODE_LENGTH, ROLE_LENGTH, ROLE_CHOICES, USER,
-    MODERATOR, ADMIN, USER_VERBOSE, USER_VERBOSE_PLURAL, USERNAME, EMAIL,
-    FIRST_NAME, LAST_NAME, BIO, ROLE, CONFIRMATION_CODE
+    MODERATOR, ADMIN, CUSTOM_USER_VERBOSE, CUSTOM_USER_VERBOSE_PLURAL,
+    VERBOSE_NAME_USERNAME, VERBOSE_NAME_EMAIL, VERBOSE_NAME_FIRST_NAME,
+    VERBOSE_NAME_LAST_NAME, VERBOSE_NAME_BIO, VERBOSE_NAME_ROLE,
+    VERBOSE_NAME_CONFIRMATION_CODE
 )
 
 
@@ -12,39 +14,39 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=NAME_LENGTH,
         unique=True,
-        verbose_name=USERNAME
+        verbose_name=VERBOSE_NAME_USERNAME
     )
     email = models.EmailField(
         max_length=MAIL_LENGTH,
         unique=True,
-        verbose_name=EMAIL
+        verbose_name=VERBOSE_NAME_EMAIL
     )
     first_name = models.CharField(
         max_length=NAME_LENGTH,
         blank=True,
-        verbose_name=FIRST_NAME
+        verbose_name=VERBOSE_NAME_FIRST_NAME
     )
     last_name = models.CharField(
         max_length=NAME_LENGTH,
         blank=True,
-        verbose_name=LAST_NAME
+        verbose_name=VERBOSE_NAME_LAST_NAME
     )
-    bio = models.TextField(blank=True, verbose_name=BIO)
+    bio = models.TextField(blank=True, verbose_name=VERBOSE_NAME_BIO)
     role = models.CharField(
         max_length=ROLE_LENGTH,
         choices=ROLE_CHOICES,
         default=USER,
-        verbose_name=ROLE
+        verbose_name=VERBOSE_NAME_ROLE
     )
     confirmation_code = models.CharField(
         max_length=CODE_LENGTH,
         blank=True,
-        verbose_name=CONFIRMATION_CODE
+        verbose_name=VERBOSE_NAME_CONFIRMATION_CODE
     )
 
     class Meta:
-        verbose_name = USER_VERBOSE
-        verbose_name_plural = USER_VERBOSE_PLURAL
+        verbose_name = CUSTOM_USER_VERBOSE
+        verbose_name_plural = CUSTOM_USER_VERBOSE_PLURAL
 
     def __str__(self):
         return self.username
