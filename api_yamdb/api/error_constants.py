@@ -9,3 +9,4 @@ ONLY_STAFF_DELETE: str = 'Only staff members are allowed to delete users.'
 NO_ROLE_CHANGE: str = 'Role change is not allowed at this endpoint.'
 INVALID_SLUG_MAX_LEN: str = 'The length SLUG cannot be more than 50 characters'
 INVALID_YEAR: str = "You can't add works that haven't been released yet"
+INVALID_REVIEW: str = "Ваш отзыв на это произведение уже опубликован"
