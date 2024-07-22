@@ -93,6 +93,7 @@ class CategorySerializer(ValidateSlugSerializer):
         model = Category
         exclude = ('id',)
 
+
 class GenreSerializer(ValidateSlugSerializer):
 
     class Meta:
