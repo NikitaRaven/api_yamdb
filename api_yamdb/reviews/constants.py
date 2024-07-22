@@ -14,4 +14,13 @@ SLUG_VERBOSE_NAME: str = 'уникальная строка'
 NAME_VERBOSE_NAME: str = 'название'
 TITLE_YEAR_VERBOSE_NAME: str = 'год выпуска'
 TITLE_DESCRIPTIONS_VERBOSE_NAME: str = 'описание'
-
+VERBOSE_NAME_AUTHOR: str = "автор"
+VERBOSE_NAME_TEXT: str = "текст"
+VERBOSE_NAME_PUB_DATE: str = "дата публикации"
+VERBOSE_NAME_REVIEW: str = "отзыв"
+VERBOSE_NAME_REVIEW_PLURAL: str = "отзывы"
+VERBOSE_NAME_SCORE: str = "оценка"
+VERBOSE_NAME_COMMENT: str = "комментарий"
+VERBOSE_NAME_COMMENT_PLURAL: str = "комментарии"
+RATING_MIN_VALIDATE: str = "Оценка не может быть меньше 0"
+RATING_MAX_VALIDATE: str = "Оценка не может быть больше 10"

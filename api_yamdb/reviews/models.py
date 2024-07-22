@@ -18,11 +18,22 @@ class NameSlugModel(models.Model):
     class Meta:
         abstract = True
         ordering = ('slug', )
-
+    
     def __str__(self):
         return self.slug
 
+      
+class BaseModel(models.Model):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE)
+    text = models.TextField(VERBOSE_NAME_TEXT)
+    pub_date = models.DateTimeField(
+        VERBOSE_NAME_PUB_DATE, auto_now_add=True, db_index=True)
 
+    class Meta:
+        abstract = True
+
+        
 class Genre(NameSlugModel):
 
     class Meta:
@@ -35,7 +46,6 @@ class Category(NameSlugModel):
     class Meta:
         verbose_name = CATEGORY_VERBOSE_NAME
         verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
-
 
 
 class Title(models.Model):
@@ -81,21 +91,19 @@ class GenreTitle(models.Model):
         return f'{self.title_id} {self.genre_id}'
 
 
-class Review(models.Model):
-    text = models.TextField()
-    score = models.SmallIntegerField(validators=[
-        MinValueValidator(RATING_MIN),
-        MaxValueValidator(RATING_MAX)
+class Review(BaseModel):
+    score = models.SmallIntegerField(VERBOSE_NAME_SCORE, validators=[
+        MinValueValidator(RATING_MIN, RATING_MIN_VALIDATE),
+        MaxValueValidator(RATING_MAX,RATING_MAX_VALIDATE)
     ])
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews')
     title = models.ForeignKey(
         Title, on_delete=models.SET_NULL,
         related_name='reviews', blank=True, null=True
     )
 
     class Meta:
+        verbose_name = VERBOSE_NAME_REVIEW
+        verbose_name_plural = VERBOSE_NAME_REVIEW_PLURAL
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -107,11 +115,10 @@ class Review(models.Model):
         return self.text
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments')
+class Comment(BaseModel):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
-    text = models.TextField()
-    pub_date = models.DateTimeField(
-        'Дата добавления', auto_now_add=True, db_index=True)
+    
+    class Meta:
+        verbose_name = VERBOSE_NAME_COMMENT
+        verbose_name_plural = VERBOSE_NAME_COMMENT_PLURAL
