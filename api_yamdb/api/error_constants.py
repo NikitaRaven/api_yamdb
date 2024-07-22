@@ -4,7 +4,6 @@ INVALID_EMAIL: str = 'User already has another email.'
 INVALID_CODE: str = 'Invalid confirmation code.'
 ME_NOT_ALLOWED: str = "Username 'me' is not allowed."
 USER_NOT_FOUND: str = 'User not found.'
-USER_EXISTS: str = 'User already exists.'
 USER_NO_PUT: str = 'Put method is not allowed for this endpoint.'
 ONLY_STAFF_DELETE: str = 'Only staff members are allowed to delete users.'
 NO_ROLE_CHANGE: str = 'Role change is not allowed at this endpoint.'
