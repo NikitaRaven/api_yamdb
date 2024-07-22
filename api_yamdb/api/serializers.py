@@ -11,7 +11,19 @@ from .error_constants import (
 from .constants import ORDER_BY_SLUG
 
 
+class ValidateSlugSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        ordering = (ORDER_BY_SLUG, )
+
+    def validate_slug(self, value):
+        if len(value) >= 50:
+            raise serializers.ValidationError(INVALID_SLUG_MAX_LEN)
+        return value
+
+
 class CategoryGenreSlugRelatedField(serializers.SlugRelatedField):
+
     def to_representation(self, value):
         obj = self.queryset.get(slug=value)
         return {'name': obj.name,
@@ -54,30 +66,17 @@ class AuthUserSerializer(BaseUserSerializer):
         fields = ('username', 'confirmation_code')
 
 
-class CategorySerializer(serializers.ModelSerializer):
-
-    def validate_slug(self, value):
-        if len(value) >= 50:
-            raise serializers.ValidationError(INVALID_SLUG_MAX_LEN)
-        return value
+class CategorySerializer(ValidateSlugSerializer):
 
     class Meta:
         model = Category
-        exclude = ('id', )
-        ordering = (ORDER_BY_SLUG, )
+        exclude = ('id',)
 
-
-class GenreSerializer(serializers.ModelSerializer):
-
-    def validate_slug(self, value):
-        if len(value) >= 50:
-            raise serializers.ValidationError(INVALID_SLUG_MAX_LEN)
-        return value
+class GenreSerializer(ValidateSlugSerializer):
 
     class Meta:
         model = Genre
-        exclude = ('id', )
-        ordering = (ORDER_BY_SLUG, )
+        exclude = ('id',)
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -90,23 +89,16 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Genre.objects.all()
     )
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
     def validate_year(self, value):
         if value > datetime.now().year:
             raise serializers.ValidationError(INVALID_YEAR)
         return value
-
-    def get_rating(self, obj):
-        reviews = Review.objects.filter(title=obj)
-        if bool(reviews):
-            return round(sum(review.score for review in reviews)
-                         / len(reviews), 1)
-        return None
-
-    class Meta:
-        model = Title
-        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
