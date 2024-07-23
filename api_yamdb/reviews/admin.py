@@ -1,13 +1,8 @@
 from django.contrib import admin
 
-from .models import Genre, Category, Title, Review, Comment, GenreTitle
+from .models import Genre, Category, Title, Review, Comment
 
 admin.site.empty_value_display = 'Не задано'
-
-
-class GenreTitleInline(admin.StackedInline):
-    model = GenreTitle
-    extra = 0
 
 
 class ReviewInline(admin.StackedInline):
@@ -27,7 +22,6 @@ class CommentInline(admin.StackedInline):
 
 class TitleAdmin(admin.ModelAdmin):
     inlines = (
-        GenreTitleInline,
         ReviewInline,
     )
     list_display = (
@@ -96,12 +90,6 @@ class GenreCategoryAdmin(admin.ModelAdmin):
     )
 
 
-class GenreAdmin(GenreCategoryAdmin):
-    inlines = (
-        GenreTitleInline,
-    )
-
-
 class CategoryAdmin(GenreCategoryAdmin):
     inlines = (
         TitleInline,
@@ -132,6 +120,6 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Review, ReviewAdmin)
-admin.site.register(Genre, GenreAdmin)
+admin.site.register(Genre, GenreCategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Comment, CommentAdmin)

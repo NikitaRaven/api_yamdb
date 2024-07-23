@@ -3,7 +3,7 @@ import csv
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from reviews.models import Category, Genre, Title, Review, Comment, GenreTitle
+from reviews.models import Category, Genre, Title, Review, Comment
 
 User = get_user_model()
 
@@ -17,7 +17,6 @@ class Command(BaseCommand):
             ('category.csv', Category, ('id', 'name', 'slug')),
             ('genre.csv', Genre, ('id', 'name', 'slug')),
             ('titles.csv', Title, ('id', 'name', 'year', 'category')),
-            ('genre_title.csv', GenreTitle, ('id', 'title_id', 'genre_id')),
             ('users.csv', User, (
                 'id',
                 'username',
@@ -34,9 +33,7 @@ class Command(BaseCommand):
         )
         related_fields = {
             'author': User,
-            'title_id': Title,
             'title': Title,
-            'genre_id': Genre,
             'review': Review,
             'category': Category,
         }
@@ -59,3 +56,14 @@ class Command(BaseCommand):
 
             except Exception as e:
                 print(f'Ошибка при импорте данных: {e}')
+
+        try:
+            file_path = base_path + 'genre_title.csv'
+            with open(file_path, 'r') as file:
+                csv_reader = csv.DictReader(file)
+                for row in csv_reader:
+                    title = Title.objects.get(pk=row['title_id'])
+                    genre = Genre.objects.get(pk=row['genre_id'])
+                    title.genre.add(genre)
+        except Exception as e:
+            print(f'Ошибка при импорте данных: {e}')

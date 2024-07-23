@@ -17,13 +17,12 @@ class NameSlugModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('slug', )
 
     def __str__(self):
         return self.slug
 
 
-class BaseModel(models.Model):
+class AuthorTextPubdateModel(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
     text = models.TextField(constants.VERBOSE_NAME_TEXT)
@@ -37,15 +36,17 @@ class BaseModel(models.Model):
 class Genre(NameSlugModel):
 
     class Meta:
-        verbose_name = constants.GENRE_VERBOSE_NAME
-        verbose_name_plural = constants.GENRE_VERBOSE_NAME_PLURAL
+        verbose_name = GENRE_VERBOSE_NAME
+        verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
+        ordering = ('slug', )
 
 
 class Category(NameSlugModel):
 
     class Meta:
-        verbose_name = constants.CATEGORY_VERBOSE_NAME
-        verbose_name_plural = constants.CATEGORY_VERBOSE_NAME_PLURAL
+        verbose_name = CATEGORY_VERBOSE_NAME
+        verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
+        ordering = ('slug', )
 
 
 class Title(models.Model):
@@ -61,8 +62,8 @@ class Title(models.Model):
         verbose_name=constants.TITLE_DESCRIPTIONS_VERBOSE_NAME
     )
     genre = models.ManyToManyField(
-        Genre, through='GenreTitle',
-        verbose_name=constants.GENRE_VERBOSE_NAME_PLURAL
+        Genre,
+        verbose_name=GENRE_VERBOSE_NAME_PLURAL
     )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
@@ -80,21 +81,10 @@ class Title(models.Model):
         return self.name
 
 
-class GenreTitle(models.Model):
-    """ Отдельная модель отношений между Title и Genre.
-    Нужна для ипорта данных из csv"""
-
-    genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.title_id} {self.genre_id}'
-
-
 class Review(BaseModel):
-    score = models.SmallIntegerField(constants.VERBOSE_NAME_SCORE, validators=[
-        MinValueValidator(constants.RATING_MIN, constants.RATING_MIN_VALIDATE),
-        MaxValueValidator(constants.RATING_MAX, constants.RATING_MAX_VALIDATE)
+    score = models.SmallIntegerField(VERBOSE_NAME_SCORE, validators=[
+        MinValueValidator(RATING_MIN, RATING_MIN_VALIDATE),
+        MaxValueValidator(RATING_MAX,RATING_MAX_VALIDATE)
     ])
     title = models.ForeignKey(
         Title, on_delete=models.SET_NULL,
@@ -115,7 +105,7 @@ class Review(BaseModel):
         return self.text
 
 
-class Comment(BaseModel):
+class Comment(AuthorTextPubdateModel):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
 

@@ -5,10 +5,11 @@ from rest_framework.exceptions import NotFound
 
 from users.models import CustomUser
 from reviews.models import Title, Category, Genre, Review, Comment
-from users.constants import NAME_LENGTH
+from users.constants import NAME_LENGTH, MAIL_LENGTH
 from .error_constants import (
     INVALID_USERNAME, ME_NOT_ALLOWED, INVALID_SLUG_MAX_LEN, INVALID_YEAR,
-    INVALID_REVIEW, INVALID_EMAIL, USER_NOT_FOUND, INVALID_CODE
+    INVALID_REVIEW, INVALID_EMAIL, USER_NOT_FOUND, INVALID_CODE,
+    EMAIL_MISMATCH
 )
 from .constants import ORDER_BY_SLUG
 
@@ -36,7 +37,7 @@ class BaseUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username',)
+        fields = ('username', 'email')
 
     username = serializers.RegexField(
         regex=r'^[\w.@+-]+$',
@@ -45,15 +46,6 @@ class BaseUserSerializer(serializers.ModelSerializer):
             'invalid': INVALID_USERNAME
         }
     )
-
-
-class CustomUserSerializer(BaseUserSerializer):
-
-    class Meta:
-        model = CustomUser
-        fields = (
-            'email', 'username', 'first_name', 'last_name', 'bio', 'role'
-        )
 
     def validate_username(self, value):
         if value.lower() == 'me':
@@ -66,7 +58,45 @@ class CustomUserSerializer(BaseUserSerializer):
         if existing_user and existing_user.email != value:
             raise serializers.ValidationError(INVALID_EMAIL)
 
+        existing_mail = CustomUser.objects.filter(email=value).first()
+        if existing_mail and existing_mail.username != username:
+            raise serializers.ValidationError(EMAIL_MISMATCH)
+
         return value
+
+
+class CustomUserSerializer(BaseUserSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+
+
+class SignUpSerializer(BaseUserSerializer):
+
+    email = serializers.EmailField(max_length=MAIL_LENGTH)
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
+
+    def create(self, validated_data):
+        username = validated_data.get('username')
+        email = validated_data.get('email')
+
+        user = CustomUser.objects.filter(
+            username=username,
+            email=email
+        ).first()
+
+        if not user:
+            return CustomUser.objects.create(**validated_data)
+
+        user.confirmation_code = validated_data.get('confirmation_code')
+        user.save()
+        return user
 
 
 class AuthUserSerializer(BaseUserSerializer):
@@ -76,12 +106,14 @@ class AuthUserSerializer(BaseUserSerializer):
         fields = ('username', 'confirmation_code')
 
     def validate(self, value):
-        user = CustomUser.objects.filter(username=value['username']).first()
+        user = CustomUser.objects.filter(
+            username=value.get('username')
+        ).first()
 
         if not user:
             raise NotFound(USER_NOT_FOUND)
 
-        if user.confirmation_code != value['confirmation_code']:
+        if user.confirmation_code != value.get('confirmation_code'):
             raise serializers.ValidationError(INVALID_CODE)
 
         return value

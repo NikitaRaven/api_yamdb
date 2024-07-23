@@ -27,15 +27,14 @@ class GenreViewSet(CreateListDestroySearchSlugMixin):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().order_by('id').annotate(
+        rating=Avg('reviews__score')
+    )
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     permission_classes = (CategoryGenreTitlePermission,)
     http_method_names = HTTP_METHODS_ALLOWED
-
-    def get_queryset(self):
-        return super().get_queryset().annotate(rating=Avg('reviews__score'))
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
