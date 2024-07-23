@@ -36,16 +36,16 @@ class AuthorTextPubdateModel(models.Model):
 class Genre(NameSlugModel):
 
     class Meta:
-        verbose_name = GENRE_VERBOSE_NAME
-        verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
+        verbose_name = constants.GENRE_VERBOSE_NAME
+        verbose_name_plural = constants.GENRE_VERBOSE_NAME_PLURAL
         ordering = ('slug', )
 
 
 class Category(NameSlugModel):
 
     class Meta:
-        verbose_name = CATEGORY_VERBOSE_NAME
-        verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
+        verbose_name = constants.CATEGORY_VERBOSE_NAME
+        verbose_name_plural = constants.CATEGORY_VERBOSE_NAME_PLURAL
         ordering = ('slug', )
 
 
@@ -63,7 +63,7 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        verbose_name=GENRE_VERBOSE_NAME_PLURAL
+        verbose_name=constants.GENRE_VERBOSE_NAME_PLURAL
     )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
@@ -81,10 +81,10 @@ class Title(models.Model):
         return self.name
 
 
-class Review(BaseModel):
-    score = models.SmallIntegerField(VERBOSE_NAME_SCORE, validators=[
-        MinValueValidator(RATING_MIN, RATING_MIN_VALIDATE),
-        MaxValueValidator(RATING_MAX,RATING_MAX_VALIDATE)
+class Review(AuthorTextPubdateModel):
+    score = models.SmallIntegerField(constants.VERBOSE_NAME_SCORE, validators=[
+        MinValueValidator(constants.RATING_MIN, constants.RATING_MIN_VALIDATE),
+        MaxValueValidator(constants.RATING_MAX, constants.RATING_MAX_VALIDATE)
     ])
     title = models.ForeignKey(
         Title, on_delete=models.SET_NULL,
