@@ -17,8 +17,7 @@ class NameSlugModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('slug', )
-    
+
     def __str__(self):
         return self.slug
 
@@ -39,6 +38,7 @@ class Genre(NameSlugModel):
     class Meta:
         verbose_name = GENRE_VERBOSE_NAME
         verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
+        ordering = ('slug', )
 
 
 class Category(NameSlugModel):
@@ -46,6 +46,7 @@ class Category(NameSlugModel):
     class Meta:
         verbose_name = CATEGORY_VERBOSE_NAME
         verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
+        ordering = ('slug', )
 
 
 class Title(models.Model):
@@ -61,7 +62,7 @@ class Title(models.Model):
         verbose_name=TITLE_DESCRIPTIONS_VERBOSE_NAME
     )
     genre = models.ManyToManyField(
-        Genre, through='GenreTitle',
+        Genre,
         verbose_name=GENRE_VERBOSE_NAME_PLURAL
     )
     category = models.ForeignKey(
@@ -78,17 +79,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class GenreTitle(models.Model):
-    """ Отдельная модель отношений между Title и Genre.
-    Нужна для ипорта данных из csv"""
-
-    genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.title_id} {self.genre_id}'
 
 
 class Review(BaseModel):
