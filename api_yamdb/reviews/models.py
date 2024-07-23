@@ -23,7 +23,7 @@ class NameSlugModel(models.Model):
         return self.slug
 
 
-class BaseModel(models.Model):
+class AuthorTextPubdateModel(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
     text = models.TextField(constants.VERBOSE_NAME_TEXT)
@@ -91,7 +91,7 @@ class GenreTitle(models.Model):
         return f'{self.title_id} {self.genre_id}'
 
 
-class Review(BaseModel):
+class Review(AuthorTextPubdateModel):
     score = models.SmallIntegerField(constants.VERBOSE_NAME_SCORE, validators=[
         MinValueValidator(constants.RATING_MIN, constants.RATING_MIN_VALIDATE),
         MaxValueValidator(constants.RATING_MAX, constants.RATING_MAX_VALIDATE)
@@ -115,7 +115,7 @@ class Review(BaseModel):
         return self.text
 
 
-class Comment(BaseModel):
+class Comment(AuthorTextPubdateModel):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
 
