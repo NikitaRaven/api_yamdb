@@ -8,32 +8,25 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from users.models import CustomUser
 from users.constants import CODE_LENGTH
-from .serializers import CustomUserSerializer, AuthUserSerializer
+from .serializers import SignUpSerializer, AuthUserSerializer
 
 
 class SignUpView(generics.CreateAPIView):
     """Handle user registration and confirmation code sending."""
 
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = SignUpSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        user = self.get_queryset().filter(
-            username=request.data.get('username'),
-            email=request.data.get('email')
-        ).first()
-
-        serializer = (self.get_serializer(user, data=request.data) if user
-                      else self.get_serializer(data=request.data))
-
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def perform_create(self, serializer):
         confirmation_code = get_random_string(length=CODE_LENGTH)
         serializer.save(confirmation_code=confirmation_code)
         self.send_mail(confirmation_code, serializer.validated_data['email'])
-
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
     def send_mail(self, confirmation_code, email):
         subject = 'Confirmation Code'
