@@ -37,15 +37,15 @@ class AuthorTextPubdateModel(models.Model):
 class Genre(NameSlugModel):
 
     class Meta(NameSlugModel.Meta):
-        verbose_name = GENRE_VERBOSE_NAME
-        verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
+        verbose_name = constants.GENRE_VERBOSE_NAME
+        verbose_name_plural = constants.GENRE_VERBOSE_NAME_PLURAL
 
 
 class Category(NameSlugModel):
 
     class Meta(NameSlugModel.Meta):
-        verbose_name = CATEGORY_VERBOSE_NAME
-        verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
+        verbose_name = constants.CATEGORY_VERBOSE_NAME
+        verbose_name_plural = constants.CATEGORY_VERBOSE_NAME_PLURAL
 
 
 class Title(models.Model):
