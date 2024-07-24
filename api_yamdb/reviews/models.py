@@ -17,6 +17,7 @@ class NameSlugModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('slug',)
 
     def __str__(self):
         return self.slug
@@ -35,18 +36,16 @@ class AuthorTextPubdateModel(models.Model):
 
 class Genre(NameSlugModel):
 
-    class Meta:
+    class Meta(NameSlugModel.Meta):
         verbose_name = GENRE_VERBOSE_NAME
         verbose_name_plural = GENRE_VERBOSE_NAME_PLURAL
-        ordering = ('slug', )
 
 
 class Category(NameSlugModel):
 
-    class Meta:
+    class Meta(NameSlugModel.Meta):
         verbose_name = CATEGORY_VERBOSE_NAME
         verbose_name_plural = CATEGORY_VERBOSE_NAME_PLURAL
-        ordering = ('slug', )
 
 
 class Title(models.Model):
